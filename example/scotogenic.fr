@@ -1,0 +1,149 @@
+(* ************************** *)
+(* *****  Information   ***** *)
+(* ************************** *)
+M$ModelName = "SN";
+
+M$Information = {
+  Authors      -> {"Jorge Alda"},
+  Version      -> "1.0",
+  Date         -> "2022-07-12",
+  Institutions -> {"Unizar/CAPA"},
+  Emails       -> {"jalda@unizar.es"}
+};
+
+(* ************************** *)
+(* **** Particle classes **** *)
+(* ************************** *)
+M$ClassesDescription = {
+
+
+  F[301] == {
+    ClassName        -> N1,
+    SelfConjugate    -> True,
+    Mass             -> MN1,
+    FullName         -> "heavy",
+    Width            -> 0
+  },
+
+  F[302] == {
+    ClassName        -> N2,
+    SelfConjugate    -> True,
+    Mass             -> MN2,
+    FullName         -> "heavy",
+    Width            -> 0
+  },
+
+  F[303] == {
+    ClassName        -> N3,
+    SelfConjugate    -> True,
+    Mass             -> MN3,
+    FullName         -> "heavy",
+    Width            -> 0
+  },
+
+  S[310] == {
+    ClassName      -> eta,
+    Indices        -> {Index[SU2D]},
+    SelfConjugate  -> False,
+    Mass           -> mueta,
+    FullName       -> "heavy",
+    QuantumNumbers -> {Y -> 1/2}
+  }
+
+};
+
+
+(* ************************** *)
+(* *****   Parameters   ***** *)
+(* ************************** *)
+M$Parameters = {
+
+  (* External parameters *)
+
+  (* Internal Parameters *)
+  MN1 == {
+    ParameterType     -> Internal,
+    ComplexParameter  -> False
+  },
+
+  MN2 == {
+    ParameterType     -> Internal,
+    ComplexParameter  -> False
+  },
+
+  MN3 == {
+    ParameterType     -> Internal,
+    ComplexParameter  -> False
+  },
+
+  mueta == {
+    ParameterType     -> Internal,
+    ComplexParameter  -> False
+  },
+
+  lam2 == {
+    ParameterType     -> Internal
+  },
+
+  lam3 == {
+    ParameterType     -> Internal,
+    ComplexParameter  -> False
+  },
+
+  lam4 == {
+    ParameterType     -> Internal,
+    ComplexParameter  -> False
+  },
+
+  lam5 == {
+    ParameterType     -> Internal,
+    ComplexParameter  -> True
+  },
+
+  yN1 == {
+    ParameterType     -> Internal,
+    Indices           -> {Index[Generation]},
+    ComplexParameter  -> True
+  },
+
+  yN2 == {
+    ParameterType     -> Internal,
+    Indices           -> {Index[Generation]},
+    ComplexParameter  -> True
+  },
+
+  yN3 == {
+    ParameterType     -> Internal,
+    Indices           -> {Index[Generation]},
+    ComplexParameter  -> True
+  }
+
+};
+
+
+(* ************************** *)
+(* *****   Lagrangian   ***** *)
+(* ************************** *)
+
+gotoBFM={G[a__]->G[a]+GQuantum[a],Wi[a__]->Wi[a]+WiQuantum[a],B[a__]->B[a]+BQuantum[a]};
+
+LN := Block[{mu},
+I N1bar.Ga[mu].DC[N1,mu] - (MN1*N1bar.N1)/2 + I N2bar.Ga[mu].DC[N2,mu] - (MN2*N2bar.N2)/2 + I N3bar.Ga[mu].DC[N3,mu] - (MN3*N3bar.N3)/2
+]/.gotoBFM;
+
+Leta := Block[{ii,jj,mu},
+DC[etabar[ii],mu] DC[eta[ii],mu] - mueta^2 etabar[ii] eta[ii] - lam2 etabar[ii] eta[ii] etabar[jj] eta[jj]
+]/.gotoBFM;
+
+LetaH := Block[{ii,jj,l5},
+l5 = Phibar[ii] eta [ii] Phibar[jj] eta[jj];
+-lam3 Phibar[ii] Phi[ii] etabar[jj] eta[jj] - lam4 Phibar[ii] eta[ii] etabar[jj] Phi[jj] - lam5 l5/2 - HC[lam5 l5]/2
+]/.gotoBFM;
+
+LYuk := Block[{ii,sp1,ff1,yuk},
+  yuk = -yN1[ff1] N1bar[sp1].LL[sp1,ii,ff1] eta[jj] Eps[ii,jj] -yN2[ff1] N2bar[sp1].LL[sp1,ii,ff1] eta[jj] Eps[ii,jj] -yN3[ff1] N3bar[sp1].LL[sp1,ii,ff1] eta[jj] Eps[ii,jj] ;
+  yuk+HC[yuk]
+]/.gotoBFM;
+
+LNP := LN + Leta + LetaH + LYuk;
+Ltot := LSM + LNP;
