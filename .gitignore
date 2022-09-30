@@ -127,3 +127,9 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# Files created by MatchMakerEFT
+example/MatchMakerEFT
+example/scotogenic_MM
+example/SMEFT_MM
+example/UnbrokenSM_BFM.fr
